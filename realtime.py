@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from __future__ import print_function
 from __future__ import division
 
@@ -10,6 +12,11 @@ from audioset import vggish_input, vggish_params, vggish_postprocess, vggish_sli
 
 import speech_recognition as sr
 import os
+import time
+import config
+
+cfg = config.Config()
+class_mapping = {k:v for k,v in zip(range(cfg.NUM_CLASSES), cfg.CLASS_INDS)}
 
 class AudioRec(object):
 
@@ -23,7 +30,7 @@ class AudioRec(object):
 
     def listen(self, save_path):
         with self.src as source:
-            print("say something")
+            print("Recording ...")
             # record for a maximum of 10s
             audio = self.r.listen(source, phrase_time_limit=10)
         # write audio to a WAV file
@@ -67,16 +74,32 @@ class VGGish(object):
         self.sess.close()
 
 
+def pad_sequences(mini_batch):
+    """Function to pad 0's to make input example atleast 10 frames long"""
+    batch = np.copy(mini_batch)
+    max_len = 10 # max 10 frames
+    feat_len = 128 # 128-d embeddings
+    seq_len = batch.shape[0]
+    if seq_len != max_len:
+        batch = np.vstack([batch, np.zeros((max_len - seq_len, feat_len), dtype=batch.dtype)])
+    return batch[None,:]
+
 
 if __name__ == '__main__':
     vggish = VGGish()
+    aed = AudioEventDetector('models/aed_model_0714_014821.val-acc-0.6995.h5')
     ar = AudioRec()
+
     ar.listen("microphone-results.wav")
     features = vggish.extract_features("microphone-results.wav")
 
     if features is not None:
-        print (features.shape)
-        print (features)
+        print ("Extracted features of shape: ", features.shape)
+        features = pad_sequences(features)
+        scores = aed.predict(features)
+        pred = np.argsort(scores, axis=1)[0][-3:][::-1]
+        pred_classes = [cfg.CLASSES[class_mapping[i]] for i in pred]
+        print ("Top 3 predicted classes are: ", pred_classes)
 
     del vggish
 
