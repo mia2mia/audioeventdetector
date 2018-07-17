@@ -40,14 +40,14 @@ class AudioRec(object):
 
 class VGGish(object):
     # Paths to downloaded VGGish files.
-    checkpoint_path = 'vggish_model.ckpt'
-    pca_params_path = 'vggish_pca_params.npz'
+    CHECKPOINT_PATH = 'audioset/vggish_model.ckpt'
+    PCA_PARAMS_PATH = 'audioset/vggish_pca_params.npz'
 
     def __init__(self):
         with tf.Graph().as_default():
             self.sess = tf.Session()
             vggish_slim.define_vggish_slim()
-            vggish_slim.load_vggish_slim_checkpoint(self.sess, self.checkpoint_path)
+            vggish_slim.load_vggish_slim_checkpoint(self.sess, self.CHECKPOINT_PATH)
 
 
     def extract_features(self, wav_path):
@@ -64,7 +64,7 @@ class VGGish(object):
         [embedding_batch] = self.sess.run([embedding_tensor],
                                     feed_dict={features_tensor: input_batch})
         # Postprocess the results to produce whitened quantized embeddings.
-        pproc = vggish_postprocess.Postprocessor(self.pca_params_path)
+        pproc = vggish_postprocess.Postprocessor(self.PCA_PARAMS_PATH)
         postprocessed_batch = pproc.postprocess(embedding_batch)
         return (np.float32(postprocessed_batch) - 128.) / 128.
 
@@ -86,12 +86,13 @@ def pad_sequences(mini_batch):
 
 
 if __name__ == '__main__':
+    # Instantiate the VGGish, AudioEventDetector classifier and AudioRecorder objects
     vggish = VGGish()
     aed = AudioEventDetector('models/aed_model_0714_014821.val-acc-0.6995.h5')
     ar = AudioRec()
 
-    ar.listen("microphone-results.wav")
-    features = vggish.extract_features("microphone-results.wav")
+    # ar.listen("microphone-results.wav")
+    features = vggish.extract_features("cough.wav")
 
     if features is not None:
         print ("Extracted features of shape: ", features.shape)

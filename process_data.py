@@ -4,7 +4,7 @@ import h5py
 import numpy as np
 import config
 
-cfg = config.Config()\
+cfg = config.Config()
 
 
 def load_data(hdf5_path):

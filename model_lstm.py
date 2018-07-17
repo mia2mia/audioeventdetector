@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from __future__ import print_function
 from __future__ import division
 
@@ -24,18 +26,18 @@ class AudioEventDetector():
             self.define_callbacks()
         else:
             self.model = load_model(pre_trained)
-        
+            self.define_callbacks()
 
     def build_model(self):
         self.model = Sequential()
         # Dense layers for LLD learning
 
         # Bidirectional LSTM Layer
-        # self.model.add(Bidirectional(LSTM(32, return_sequences=True), input_shape=(10, 128)))
-        self.model.add(Bidirectional(LSTM(32, return_sequences=False), input_shape=(10, 128)))
+        self.model.add(Bidirectional(LSTM(32, return_sequences=True), input_shape=(10, 128)))
+        # self.model.add(Bidirectional(LSTM(32, return_sequences=False), input_shape=(10, 128)))
         self.model.add(Dropout(0.5))
         # Average Pooling Layer for combining all time steps' outputs
-        # self.model.add(GlobalAveragePooling1D())
+        self.model.add(GlobalAveragePooling1D())
         # Final Classification Layer with Softmax activation
         self.model.add(Dense(10, activation='softmax'))
 
@@ -55,8 +57,8 @@ class AudioEventDetector():
 
         self.callback_list = [
             ReduceLROnPlateau(
-            	monitor='val_loss', 
-            	factor=0.5,
+                monitor='val_loss', 
+                factor=0.5,
                 patience=5, 
                 min_lr=0.00001,
                 verbose=1
@@ -83,11 +85,11 @@ class AudioEventDetector():
             validation_data=None, class_weight=None):
         
         history = self.model.fit(
-        				x=x_train, y=y_train,
-        				batch_size=batch_size, epochs=epochs,
-        				callbacks=self.callback_list,
-        				validation_data=validation_data
-        			)
+                        x=x_train, y=y_train,
+                        batch_size=batch_size, epochs=epochs,
+                        callbacks=self.callback_list,
+                        validation_data=validation_data
+                    )
 
         self.plot_metrics(history.history)
         
