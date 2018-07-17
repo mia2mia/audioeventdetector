@@ -91,8 +91,8 @@ if __name__ == '__main__':
     aed = AudioEventDetector('models/aed_model_0714_014821.val-acc-0.6995.h5')
     ar = AudioRec()
 
-    # ar.listen("microphone-results.wav")
-    features = vggish.extract_features("cough.wav")
+    ar.listen("microphone-results.wav")
+    features = vggish.extract_features("microphone-results.wav")
 
     if features is not None:
         print ("Extracted features of shape: ", features.shape)
