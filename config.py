@@ -8,23 +8,43 @@ class Config(object):
     UNBAL_HDF5_PATH = "packed_features/unbal_train.h5"
     CSV_LABEL_PATH = "class_labels_indices.csv"
 
+    X_TRAIN_PATH = 'dataset/x_train.npy'
+    Y_TRAIN_PATH = 'dataset/y_train.npy'
+    X_VAL_PATH = 'dataset/x_val.npy'
+    Y_VAL_PATH = 'dataset/y_val.npy'
+    X_TEST_PATH = 'dataset/x_test.npy'
+    Y_TEST_PATH = 'dataset/y_test.npy'
     # Dictionary containing classes of interest and their mappings
     CLASSES = {
-        5: "Naration, Monologue",
-        14: "Screaming",    
-        388: "Alarm",
-        67: "Applause",
-        23: "Baby Cry, Infant Cry",
         4: "Conversation",
-        384: "Typing",
+        5: "Narration, Monologue",
+        14: "Screaming",
         16: "Laughter",
+        23: "Baby Cry, Infant Cry",
         47: "Cough",
         53: "Walk, Footsteps",
+        67: "Applause",
+        388: "Alarm",
+        384: "Typing",
     }
 
-    LEARNING_RATE = 0.001
+    LEARNING_RATE = 0.0001
+    DROP_LR_FACTOR = 0.5
+    REDUCE_LR_ON_PLATEAU = True
+    STEP_DECAY = False
+    DECAY_EPOCHS = 10.0
     OPTIMIZER = 'adam'
-    BATCH_SIZE = 32
+    BATCH_SIZE = 128
+    NUM_EPOCHS = 100
+
+    NUM_DENSE_UNITS = 256
+    NUM_DENSE_LAYERS = 1
+
+    NUM_LSTM_UNITS = 32
+    NUM_LSTM_LAYERS = 1
+
+    DROPOUT_PROB = 0.5
+    MAX_SAMPLES_PER_CLASS = 1200
 
     def __init__(self):
         self.NUM_CLASSES = len(self.CLASSES)

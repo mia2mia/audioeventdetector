@@ -30,7 +30,7 @@ def create_dataset(x, y):
     for i, label in enumerate(y):
         if np.sum(label[cfg.CLASS_INDS]) == 1:
             label_id = np.where(label[cfg.CLASS_INDS]==1)[0][0]
-            if counts[label_id] > 800:
+            if counts[label_id] > cfg.MAX_SAMPLES_PER_CLASS:
                 continue
             # increase the count for that class
             counts[label_id] += 1
@@ -40,6 +40,7 @@ def create_dataset(x, y):
     for k,v in counts.items():
         print ("{}: {}".format(k,v))
     return np.dstack(data).transpose(2,0,1), np.dstack(labels).transpose(2,0,1).squeeze()
+    # return None, None
 
 
 if __name__=='__main__':
@@ -56,9 +57,9 @@ if __name__=='__main__':
     x_val, y_val = create_dataset(x_eval, y_eval)
     print (x_val.shape, y_val.shape)
 
-    np.save('dataset/x_train.npy', x_train)
-    np.save('dataset/y_train.npy', y_train)
-    np.save('dataset/x_val.npy', x_val)
-    np.save('dataset/y_val.npy', y_val)
+    np.save('dataset_pruned/x_train.npy', x_train)
+    np.save('dataset_pruned/y_train.npy', y_train)
+    np.save('dataset_pruned/x_val.npy', x_val)
+    np.save('dataset_pruned/y_val.npy', y_val)
  
 

@@ -4,7 +4,6 @@ from __future__ import print_function
 from __future__ import division
 
 import numpy as np
-import matplotlib.pyplot as plt
 
 import keras
 from keras.layers import Dense, Dropout, Conv2D
@@ -12,10 +11,14 @@ from keras.layers import LSTM, TimeDistributed, Bidirectional
 from keras.layers import GlobalAveragePooling1D
 from keras.models import Sequential, load_model
 from keras import optimizers
-from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
+from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, LearningRateScheduler
 
 import time
 import os
+
+import utils
+import config
+cfg = config.Config()
 
 
 class AudioEventDetector():
@@ -28,21 +31,32 @@ class AudioEventDetector():
             self.model = load_model(pre_trained)
             self.define_callbacks()
 
+
     def build_model(self):
         self.model = Sequential()
         # Dense layers for LLD learning
 
-        # Bidirectional LSTM Layer
-        self.model.add(Bidirectional(LSTM(32, return_sequences=True), input_shape=(10, 128)))
-        # self.model.add(Bidirectional(LSTM(32, return_sequences=False), input_shape=(10, 128)))
-        self.model.add(Dropout(0.5))
+        # Bidirectional LSTM Layers
+        for _ in range(cfg.NUM_LSTM_LAYERS):
+            self.model.add(Bidirectional(LSTM(cfg.NUM_LSTM_UNITS, return_sequences=True), input_shape=(10, 128)))
+            self.model.add(Dropout(cfg.DROPOUT_PROB))
+        
         # Average Pooling Layer for combining all time steps' outputs
         self.model.add(GlobalAveragePooling1D())
+
+        # Dense Layers
+        for _ in range(cfg.NUM_DENSE_LAYERS):
+            self.model.add(Dense(cfg.NUM_DENSE_UNITS, activation='relu'))
+            self.model.add(Dropout(cfg.DROPOUT_PROB))
+        
         # Final Classification Layer with Softmax activation
-        self.model.add(Dense(10, activation='softmax'))
+        self.model.add(Dense(cfg.NUM_CLASSES, activation='softmax'))
 
         # Loss Function and Metrics
-        opt = optimizers.Adam(lr=0.0001)
+        if cfg.STEP_DECAY:
+            opt = optimizers.Adam(lr=0.0)
+        else:
+            opt = optimizers.Adam(lr=cfg.LEARNING_RATE)
         self.model.compile(loss='categorical_crossentropy', 
                             optimizer=opt, 
                             metrics=['accuracy'])
@@ -56,27 +70,27 @@ class AudioEventDetector():
                         + '.h5'
 
         self.callback_list = [
-            ReduceLROnPlateau(
-                monitor='val_loss', 
-                factor=0.5,
-                patience=5, 
-                min_lr=0.00001,
-                verbose=1
-            ),
             EarlyStopping(
-                monitor='val_acc',
-                patience=10,
-                verbose=1,
-                mode='max'
+                monitor='val_acc', patience=15, verbose=1, mode='max'
             ),
             ModelCheckpoint(
-                filepath=file_path,
-                monitor='val_acc',
-                save_best_only='True',
-                verbose=1,
-                mode='max'
+                filepath=file_path, monitor='val_acc', save_best_only='True', verbose=1, mode='max'
             )
         ]
+
+        if cfg.REDUCE_LR_ON_PLATEAU:
+            self.callback_list.append(
+                ReduceLROnPlateau(
+                    monitor='val_loss', factor=cfg.DROP_LR_FACTOR, patience=5, min_lr=0.00001, verbose=1
+                ),
+            )
+
+        if cfg.STEP_DECAY:
+            self.callback_list.append(
+                LearningRateScheduler(
+                    step_decay, verbose=1
+                ),
+            )
 
 
     def fit(self, x_train, y_train,
@@ -91,40 +105,30 @@ class AudioEventDetector():
                         validation_data=validation_data
                     )
 
-        self.plot_metrics(history.history)
+        utils.plot_metrics(history.history)
         
 
     def predict(self, x_test):
         return self.model.predict(x_test)
 
 
-    def plot_metrics(self, history, show=False):
-        plt.subplot(2, 1, 1)
-        plt.title('Loss')
-        plt.plot(history['loss'], '-o', label='train')
-        plt.plot(history['val_loss'], '-o', label='val')
-        plt.xlabel('epoch')
-        plt.legend(loc='upper right')
-        plt.subplot(2,1,2)
-        plt.title('Accuracy')
-        plt.plot(history['acc'], '-o', label='train')
-        plt.plot(history['val_acc'], '-o', label='val')
-        plt.xlabel('epoch')
-        plt.legend(loc='upper left')
-        plt.savefig('metrics.png')
-        plt.gcf().set_size_inches(15, 12)
-        if show:
-            plt.show()
-        else:
-            plt.close()
+def step_decay(epoch):
+    initial_lrate = cfg.LEARNING_RATE
+    drop = cfg.DROP_LR_FACTOR
+    epochs_drop = cfg.DECAY_EPOCHS
+    lrate = initial_lrate * (drop ** (epoch//epochs_drop))
+    return lrate
 
 if __name__ == "__main__":
+    cfg.display()
     aed = AudioEventDetector()
     aed.model.summary()
 
-    x_train = np.load('dataset/x_train.npy')
-    y_train = np.load('dataset/y_train.npy')
-    x_val = np.load('dataset/x_val.npy')
-    y_val = np.load('dataset/y_val.npy')
+    x_train = np.load(cfg.X_TRAIN_PATH)
+    y_train = np.load(cfg.Y_TRAIN_PATH)
+    x_val = np.load(cfg.X_VAL_PATH)
+    y_val = np.load(cfg.Y_VAL_PATH)
 
-    aed.fit(x_train, y_train, batch_size=32, epochs=100, validation_data=(x_val, y_val))
+    aed.fit(x_train, y_train, 
+            batch_size=cfg.BATCH_SIZE, epochs=cfg.NUM_EPOCHS, 
+            validation_data=(x_val, y_val))
