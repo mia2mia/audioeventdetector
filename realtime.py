@@ -91,16 +91,18 @@ if __name__ == '__main__':
     aed = AudioEventDetector('models/aed_model_0714_014821.val-acc-0.6995.h5')
     ar = AudioRec()
 
-    ar.listen("microphone-results.wav")
-    features = vggish.extract_features("microphone-results.wav")
+    while True:
+        ar.listen("microphone-results.wav")
+        features = vggish.extract_features("microphone-results.wav")
 
-    if features is not None:
-        print ("Extracted features of shape: ", features.shape)
-        features = pad_sequences(features)
-        scores = aed.predict(features)
-        pred = np.argsort(scores, axis=1)[0][-3:][::-1]
-        pred_classes = [cfg.CLASSES[class_mapping[i]] for i in pred]
-        print ("Top 3 predicted classes are: ", pred_classes)
+        if features is not None:
+            print ("Extracted features of shape: ", features.shape)
+            features = pad_sequences(features)
+            scores = aed.predict(features)
+            pred = np.argsort(scores, axis=1)[0][-3:][::-1]
+            pred_classes = [cfg.CLASSES[class_mapping[i]] for i in pred]
+            print ("Top 3 predicted classes are: ", pred_classes)
+        time.sleep(0.1)
 
     del vggish
 
