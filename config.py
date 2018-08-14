@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import os
 # Config file to define the predefined parameters
 class Config(object):
 
@@ -49,8 +49,11 @@ class Config(object):
     def __init__(self):
         self.NUM_CLASSES = len(self.CLASSES)
         self.CLASS_INDS = sorted(self.CLASSES.keys())
+        if not os.path.exists(os.path.dirname(self.X_TRAIN_PATH)):
+            os.makedirs(os.path.dirname(self.X_TRAIN_PATH))
 
     def display(self):
+
         """Display Configuration values."""
         print("\nConfigurations:")
         for a in dir(self):

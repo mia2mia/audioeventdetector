@@ -57,9 +57,9 @@ if __name__=='__main__':
     x_val, y_val = create_dataset(x_eval, y_eval)
     print (x_val.shape, y_val.shape)
 
-    np.save('dataset_pruned/x_train.npy', x_train)
-    np.save('dataset_pruned/y_train.npy', y_train)
-    np.save('dataset_pruned/x_val.npy', x_val)
-    np.save('dataset_pruned/y_val.npy', y_val)
+    np.save(cfg.X_TRAIN_PATH, x_train)
+    np.save(cfg.Y_TRAIN_PATH, y_train)
+    np.save(cfg.X_VAL_PATH, x_val)
+    np.save(cfg.Y_VAL_PATH, y_val)
  
 
