@@ -14,6 +14,8 @@ class Config(object):
     Y_VAL_PATH = 'dataset/y_val.npy'
     X_TEST_PATH = 'dataset/x_test.npy'
     Y_TEST_PATH = 'dataset/y_test.npy'
+
+    TRAINED_MODEL_PATH = 'weights/aed_model_0714_014821.val-acc-0.6995.h5'
     # Dictionary containing classes of interest and their mappings
     CLASSES = {
         4: "Conversation",
@@ -38,7 +40,7 @@ class Config(object):
     NUM_EPOCHS = 100
 
     NUM_DENSE_UNITS = 256
-    NUM_DENSE_LAYERS = 1
+    NUM_DENSE_LAYERS = 0
 
     NUM_LSTM_UNITS = 32
     NUM_LSTM_LAYERS = 1
