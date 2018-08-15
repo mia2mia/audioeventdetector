@@ -88,7 +88,8 @@ def pad_sequences(mini_batch):
 if __name__ == '__main__':
     # Instantiate the VGGish, AudioEventDetector classifier and AudioRecorder objects
     vggish = VGGish()
-    aed = AudioEventDetector('models/aed_model_0714_014821.val-acc-0.6995.h5')
+    aed = AudioEventDetector(cfg.TRAINED_MODEL_PATH)
+    aed.model.summary()
     ar = AudioRec()
 
     while True:

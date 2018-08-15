@@ -15,6 +15,7 @@ from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, L
 
 import time
 import os
+import argparse
 
 import utils
 import config
@@ -37,8 +38,11 @@ class AudioEventDetector():
         # Dense layers for LLD learning
 
         # Bidirectional LSTM Layers
-        for _ in range(cfg.NUM_LSTM_LAYERS):
-            self.model.add(Bidirectional(LSTM(cfg.NUM_LSTM_UNITS, return_sequences=True), input_shape=(10, 128)))
+        self.model.add(Bidirectional(LSTM(cfg.NUM_LSTM_UNITS, return_sequences=True), input_shape=(10, 128)))
+        self.model.add(Dropout(cfg.DROPOUT_PROB))
+
+        for _ in range(cfg.NUM_LSTM_LAYERS - 1):
+            self.model.add(Bidirectional(LSTM(cfg.NUM_LSTM_UNITS, return_sequences=True)))
             self.model.add(Dropout(cfg.DROPOUT_PROB))
         
         # Average Pooling Layer for combining all time steps' outputs
@@ -63,9 +67,9 @@ class AudioEventDetector():
 
 
     def define_callbacks(self):
-        if not os.path.isdir('models'):
-            os.makedirs('models')
-        file_path = 'models/aed_model_' \
+        if not os.path.isdir('weights'):
+            os.makedirs('weights')
+        file_path = 'weights/aed_model_' \
                         + time.strftime("%m%d_%H%M%S") \
                         + '.h5'
 
@@ -118,6 +122,7 @@ def step_decay(epoch):
     epochs_drop = cfg.DECAY_EPOCHS
     lrate = initial_lrate * (drop ** (epoch//epochs_drop))
     return lrate
+
 
 if __name__ == "__main__":
     cfg.display()

@@ -62,4 +62,3 @@ if __name__=='__main__':
     np.save(cfg.X_VAL_PATH, x_val)
     np.save(cfg.Y_VAL_PATH, y_val)
  
-
