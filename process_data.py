@@ -2,7 +2,8 @@
 
 import h5py
 import numpy as np
-import config
+#TODO: Load the correct config
+import config as config
 
 cfg = config.Config()
 

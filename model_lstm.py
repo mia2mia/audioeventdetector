@@ -15,10 +15,10 @@ from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, L
 
 import time
 import os
-import argparse
 
 import utils
-import config
+#TODO: Load the correct config
+import config as config
 cfg = config.Config()
 
 

@@ -13,7 +13,9 @@ from audioset import vggish_input, vggish_params, vggish_postprocess, vggish_sli
 import speech_recognition as sr
 import os
 import time
-import config
+
+#TODO: change the config name to correct config
+import config as config
 
 cfg = config.Config()
 class_mapping = {k:v for k,v in zip(range(cfg.NUM_CLASSES), cfg.CLASS_INDS)}

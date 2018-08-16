@@ -31,17 +31,26 @@ class Config(object):
     }
 
     LEARNING_RATE = 0.0001
+    # Learning rate drop factor
     DROP_LR_FACTOR = 0.5
+    # Whether to reduce learning rate if validation loss plateaus
     REDUCE_LR_ON_PLATEAU = True
+    # Whether to enable step decay of learning rate in which case you need to
+    # specify DROP_LR_FACTOR
     STEP_DECAY = False
+    # Number of epochs after which to decay the learning rate for step decay
     DECAY_EPOCHS = 10.0
     OPTIMIZER = 'adam'
     BATCH_SIZE = 128
+    # Number of epochs to train for
     NUM_EPOCHS = 100
 
+    # Number of dense layers to use after the LSTM layers
     NUM_DENSE_UNITS = 256
     NUM_DENSE_LAYERS = 0
 
+    # Number of Bidirectional LSTM layers to use.
+    # Number of units refers to LSTM cells in the forward pass
     NUM_LSTM_UNITS = 32
     NUM_LSTM_LAYERS = 1
 
