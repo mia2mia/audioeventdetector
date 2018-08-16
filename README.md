@@ -67,6 +67,7 @@ This section provides detailed information about the code structure and how to t
 * `realtime.py` - Code required for Audio event detection in real time. Needs correct config and path to correct pre-trained model. 
 * `utils.py` - file containing plotting and directory creation utilities
 * `Test_Realtime.ipynb` - Interactive jupyter notebook for testing realtime application.
+* `metrics.png` files - training and validation loss and accuracy plots for different categories.
 
 #### How to test the pre-trained model
 
