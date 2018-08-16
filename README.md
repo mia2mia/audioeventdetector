@@ -96,6 +96,7 @@ import config_fact as config
 ```sh
 $ python process_data.py
 ```
+Training data is stored as `npy` files, with labels being stored as 1-hot vectors.
 WARNING: This takes 10-15 mins to load such a big dataset.
 
 5. Now your dataset should be ready for use in training in a folder such as `DATASET_FACT`. Open the config file again and set parameters for training your model such as `NUM_LSTM_LAYERS` and `LEARNING_RATE` etc.
@@ -104,4 +105,4 @@ WARNING: This takes 10-15 mins to load such a big dataset.
 ```sh
 $ python model_lstm.py
 ```
-The best model from training will be saved under weights directory.
+The best model from training will be saved under WEIGHTS directory.
