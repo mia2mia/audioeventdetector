@@ -95,7 +95,9 @@ import config_fact as config
 $ python process_data.py
 ```
 WARNING: This takes 10-15 mins to load such a big dataset.
+
 5. Now your dataset should be ready for use in training in a folder such as `DATASET_FACT`. Open the config file again and set parameters for training your model such as `NUM_LSTM_LAYERS` and `LEARNING_RATE` etc.
+
 6. We can start our model training by runnning:
 ```sh
 $ python model_lstm.py
