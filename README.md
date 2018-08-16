@@ -66,6 +66,7 @@ This section provides detailed information about the code structure and how to t
 * `process_data.py` - Code required to extract required subset of data from original audioset and store it as `npy` files for use during training. 
 * `realtime.py` - Code required for Audio event detection in real time. Needs correct config and path to correct pre-trained model. 
 * `utils.py` - file containing plotting and directory creation utilities
+* `Test_Realtime.ipynb` - Interactive jupyter notebook for testing realtime application.
 
 #### How to test the pre-trained model
 
