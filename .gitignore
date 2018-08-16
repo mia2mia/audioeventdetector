@@ -1,9 +1,7 @@
 *.pyc
 *.zip
 *.DS_Store
-*.png
 *.pdf
 *.ckpt
-*.npy
 *.npz
 *.txt
